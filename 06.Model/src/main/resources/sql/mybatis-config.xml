@@ -7,7 +7,7 @@
 <!--	mybatis-config.xml :: MyBatis Framework  MetaData -->
 <configuration>
 
-	<!-- 기타 설정정보 :: [MyBatis_Home]/mybatis-3.1.2.pdf 참조 / default = false -->
+	<!-- 기타 설정정보 :: [MyBatis_Home]/mybatis-3.2.1.pdf 참조 -->
 	<settings>
 		<setting name="callSettersOnNulls" value="false"/>
 	</settings>	

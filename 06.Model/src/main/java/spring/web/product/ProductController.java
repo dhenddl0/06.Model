@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,6 +37,15 @@ public class ProductController {
       System.out.println(this.getClass());
    }
    
+   @Value("#{commonProperties['pageUnit']}")
+   //@Value("#{commonProperties['pageUnit'] ?: 3}")
+   int pageUnit;
+   
+   @Value("#{commonProperties['pageSize']}")
+   //@Value("#{commonProperties['pageSize'] ?: 2}")
+   int pageSize;
+
+   
    @RequestMapping("/addProductView.do")
    public String addProductView() throws Exception{
 	   
@@ -44,46 +54,44 @@ public class ProductController {
 	   return "forward:/product/addProductView.jsp";
    }
    
-   @RequestMapping("addProduct.do")
-   public String addProduct(@ModelAttribute("product") Product product) throws Exception {
+   @RequestMapping("/addProduct.do")
+   public String addProduct(@ModelAttribute("product") Product product, Model model) throws Exception {
+	   
+	   System.out.println("/addProduct.do");
+	   
+	   productService.addProduct(product);
+	   model.addAttribute("product", product);
 	   
 	   return "forward:/product/addProduct.jsp";
    }
    
-   @RequestMapping("getProduct.do")
+   @RequestMapping("/getProduct.do")
    public String getProduct(@RequestParam("prodNo") int prodNo, 
-		   									@RequestParam(value = "menu", required = true) String menu,
-		   										Model model,
-		   										HttpServletResponse response, HttpServletRequest request) throws Exception {
+//		   									@RequestParam(value = "menu", required = false) String menu,
+		   										Model model
+//		   										HttpServletResponse response, HttpServletRequest request
+		   										) throws Exception {
 	   
 	   System.out.println("/getProduct.do");
 	   
 	   Product product = productService.getProduct(prodNo);
-	   
-	   model.addAttribute("menu", menu);
-	   
-	   String history = null;
-       Cookie[] cookies = request.getCookies();
-       if (cookies != null && cookies.length > 0) {
-           for (int i = 0; i < cookies.length; i++) {
-               Cookie cookie = cookies[i];
-               if (cookie.getName().equals("history")) {
-                   history = cookie.getValue();
-               }
-           }
-       }
-       
-       if (history == null) {
-           history = Integer.toString(prodNo);
-       } else {
-           history += "/" + prodNo;
-       }
-       
-       // 쿠키에 열람 기록을 저장
-       Cookie historyCookie = new Cookie("history", history);
-       response.addCookie(historyCookie);
-	   
+	  
 	   model.addAttribute("product", product);
+//	   model.addAttribute("menu", menu);
+	   
+		/*
+		 * String history = null; Cookie[] cookies = request.getCookies(); if (cookies
+		 * != null && cookies.length > 0) { for (int i = 0; i < cookies.length; i++) {
+		 * Cookie cookie = cookies[i]; if (cookie.getName().equals("history")) { history
+		 * = cookie.getValue(); } } }
+		 * 
+		 * if (history == null) { history = Integer.toString(prodNo); } else { history
+		 * += "/" + prodNo; }
+		 * 
+		 * // 쿠키에 열람 기록을 저장 Cookie historyCookie = new Cookie("history", history);
+		 * response.addCookie(historyCookie);
+		 */
+	 
 	   
 	   return "forward:/product/getProduct.jsp";
    }
@@ -101,8 +109,8 @@ public class ProductController {
 	   
    }
    
-   @RequestMapping("updateProduct.do")
-   public String updateProduct(@ModelAttribute("product") Product product, Model model, HttpSession session) throws Exception{
+   @RequestMapping("/updateProduct.do")
+   public String updateProduct(@ModelAttribute("prodNo") Product product, Model model, HttpSession session) throws Exception{
 	   
 	   System.out.println("/updateProduct.do");
 	   
@@ -113,11 +121,11 @@ public class ProductController {
 		   session.setAttribute("product", product);
 	   }
 	   
-	   return "forward:/getProduct.do?prodNo="+product.getProdNo();
+	   return "forward:/product/updateProductView.jsp";
    }
    
-   @RequestMapping("listProduct.do")
-   public String listProduct(@ModelAttribute("search") Search search, Model model, HttpSession session, int pageSize, int pageUnit, String menu ) throws Exception{
+   @RequestMapping("/listProduct.do")
+   public String listProduct(@ModelAttribute("search") Search search, Model model, HttpSession session, int pageSize, int pageUnit, @RequestParam String menu ) throws Exception{
 	   
 	   System.out.println("/listProduct.do");
 	   
@@ -128,7 +136,7 @@ public class ProductController {
 	   
 	   Map<String, Object> map = productService.getProductList(search);
 	   
-	   Page resultPage = new Page(search.getCurrentPage(), ((Integer)map.get("totalCoutn")).intValue(), pageUnit, pageSize);
+	   Page resultPage = new Page(search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 	   
 	   System.out.println(resultPage);
 	     
@@ -138,7 +146,7 @@ public class ProductController {
 	   model.addAttribute("search", search);
 	   model.addAttribute("menu", menu);
 	   
-	   return "forward:/product/listProduct.jsp?menu="+menu;
+	   return "forward:/product/listProduct.jsp";
    }
    
 }

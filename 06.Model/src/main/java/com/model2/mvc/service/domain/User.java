@@ -20,23 +20,12 @@ public class User {
 	private String phone1;
 	private String phone2;
 	private String phone3;
-	private boolean active; 
+
 	
 	
 	///Constructor
-	  public User() {
-		}
-	    public User (	String userId, String userName,String password, String role, String ssn, String phone, String addr,
-	    							String email ) {
-			this.userId = userId;
-			this.userName = userName;
-			this.password = password;
-			this.role = role;
-			this.ssn = ssn;
-			this.phone = phone;
-			this.addr = addr;
-			this.email = email;
-		}    
+	public User(){
+	}
 	
 	///Method 
 	public String getUserId() {
@@ -109,17 +98,10 @@ public class User {
 	public String getPhone3() {
 		return phone3;
 	}
-	
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	public boolean isActive() {
-		return active;
-	}
 
 	@Override
 	public String toString() {
-		return "User : [userId] "+userId+" [userName] "+userName+" [password] "+password+" [role] "+ role
+		return "UserVO : [userId] "+userId+" [userName] "+userName+" [password] "+password+" [role] "+ role
 			+" [ssn] "+ssn+" [phone] "+phone+" [email] "+email+" [regDate] "+regDate;
 	}
 }
