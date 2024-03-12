@@ -12,7 +12,7 @@
 
 <html>
 <head>
-<title>회원정보수정</title>
+<title>상품정보수정</title>
 
 <link rel="stylesheet" href="/css/admin.css" type="text/css">
 
@@ -64,6 +64,7 @@ function fncAddProduct(){
 
 <%-- <input type="hidden" name="prodNo" value="<%=vo.getProdNo()%>"/> --%>
 <input type="hidden" name="prodNo" value="${product.prodNo}"/>
+<input type="hidden" name="menu" value="${menu}"/>
 
 <table width="100%" height="37" border="0" cellpadding="0" cellspacing="0">
 	<tr>
@@ -162,6 +163,7 @@ function fncAddProduct(){
 	</tr>
 	<tr>
 		<td height="1" colspan="3" bgcolor="D6D6D6"></td>
+		<input type="hidden" name="regDate2" value="${product.regDate}"/>
 	</tr>
 </table>
 

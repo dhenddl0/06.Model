@@ -1,7 +1,9 @@
-package spring.web.product;
+package com.model2.mvc.web.product;
 
+import java.sql.Date;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,9 +57,13 @@ public class ProductController {
    }
    
    @RequestMapping("/addProduct.do")
-   public String addProduct(@ModelAttribute("product") Product product, Model model) throws Exception {
+   public String addProduct(@ModelAttribute("product") Product product, Model model, ServletRequest request) throws Exception {
 	   
 	   System.out.println("/addProduct.do");
+	   
+	   String[] date = request.getParameter("manuDate").split("-");
+	   
+	   product.setManuDate(date[0] + date[1] + date[2]);
 	   
 	   productService.addProduct(product);
 	   model.addAttribute("product", product);
@@ -67,9 +73,9 @@ public class ProductController {
    
    @RequestMapping("/getProduct.do")
    public String getProduct(@RequestParam("prodNo") int prodNo, 
-//		   									@RequestParam(value = "menu", required = false) String menu,
-		   										Model model
-//		   										HttpServletResponse response, HttpServletRequest request
+	   									@RequestParam(value = "menu", required = false) String menu,
+		   										Model model, ServletRequest request,
+		   										HttpServletResponse response
 		   										) throws Exception {
 	   
 	   System.out.println("/getProduct.do");
@@ -77,55 +83,86 @@ public class ProductController {
 	   Product product = productService.getProduct(prodNo);
 	  
 	   model.addAttribute("product", product);
-//	   model.addAttribute("menu", menu);
+	   model.addAttribute("menu", menu);
 	   
-		/*
-		 * String history = null; Cookie[] cookies = request.getCookies(); if (cookies
-		 * != null && cookies.length > 0) { for (int i = 0; i < cookies.length; i++) {
-		 * Cookie cookie = cookies[i]; if (cookie.getName().equals("history")) { history
-		 * = cookie.getValue(); } } }
-		 * 
-		 * if (history == null) { history = Integer.toString(prodNo); } else { history
-		 * += "/" + prodNo; }
-		 * 
-		 * // 쿠키에 열람 기록을 저장 Cookie historyCookie = new Cookie("history", history);
-		 * response.addCookie(historyCookie);
-		 */
+	   //request.setAttribute("menu", request.getParameter("menu"));
+	   
+	   String history = null;
+       Cookie[] cookies = ((HttpServletRequest) request).getCookies();
+       if (cookies != null && cookies.length > 0) {
+           for (int i = 0; i < cookies.length; i++) {
+               Cookie cookie = cookies[i];
+               if (cookie.getName().equals("history")) {
+                   history = cookie.getValue();
+               }
+           }
+       }
+       
+       // 현재 열람한 상품 번호를 기존 열람 기록에 추가
+       if (history == null) {
+           history = Integer.toString(prodNo);
+       } else {
+           history += "/" + prodNo;
+       }
+       
+       // 쿠키에 열람 기록을 저장
+       Cookie historyCookie = new Cookie("history", history);
+       response.addCookie(historyCookie);
+
 	 
-	   
 	   return "forward:/product/getProduct.jsp";
    }
-   
+
+
    @RequestMapping("/updateProductView.do")
-   public String updateProductView(@RequestParam("prodNo") int prodNo, Model model ) throws Exception{
+   public String updateProductView(@RequestParam("prodNo") int prodNo, Model model, @RequestParam("menu") String menu) throws Exception{
 	   
 	   System.out.println("/updateProductView.do");
 	   
 	   Product product = productService.getProduct(prodNo);
 	   
 	   model.addAttribute("product", product);
+	   model.addAttribute("menu", menu);
 	   
 	   return "forward:/product/updateProductView.jsp";
 	   
    }
    
    @RequestMapping("/updateProduct.do")
-   public String updateProduct(@ModelAttribute("prodNo") Product product, Model model, HttpSession session) throws Exception{
+   public String updateProduct(@ModelAttribute("prodNo") Product product , Model model, ServletRequest request,
+		  /* HttpSession session*/ @RequestParam("menu") String menu
+		   ) throws Exception{
 	   
 	   System.out.println("/updateProduct.do");
+	   System.out.println("menu = " +menu);
 	   
-	   productService.updateProduct(product);
+	  // Product product = productService.getProduct(prodNo);
 	   
-	   int sessionNo = ((Product)session.getAttribute("product")).getProdNo();
-	   if(sessionNo == product.getProdNo()) {
-		   session.setAttribute("product", product);
-	   }
 	   
-	   return "forward:/product/updateProductView.jsp";
+	   product.setRegDate(Date.valueOf(request.getParameter("regDate2")));
+	  
+	   productService.updateProduct(product);   
+	   
+	   
+	   model.addAttribute("product", product);
+	   model.addAttribute("menu", menu);
+	   
+		/*
+		 * int sessionNo = ((Product)session.getAttribute("product")).getProdNo();
+		 * if(sessionNo == product.getProdNo()) { session.setAttribute("product",
+		 * product); }
+		 */
+	   
+	   return "forward:/product/getProduct.jsp";
    }
    
    @RequestMapping("/listProduct.do")
-   public String listProduct(@ModelAttribute("search") Search search, Model model, HttpSession session, int pageSize, int pageUnit, @RequestParam String menu ) throws Exception{
+   public String listProduct(@ModelAttribute("search") Search search, Model model, ServletRequest request,
+		   @RequestParam("menu") String menu
+		   ) throws Exception{
+	   
+	   //request.getAttribute("menu");
+
 	   
 	   System.out.println("/listProduct.do");
 	   

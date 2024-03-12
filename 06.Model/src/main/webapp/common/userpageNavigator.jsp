@@ -27,18 +27,18 @@
 	
 	
 	<c:if test="${resultPage.currentPage > 1 }">
-		<a href="javascript:fncGetProductList(1)"> &lt;&lt; </a>
-		<a href="javascript:fncGetProductList(${resultPage.currentPage-1})"> 이전 </a>
+		<a href="javascript:fncGetUserList(1)"> &lt;&lt; </a>
+		<a href="javascript:fncGetUserList(${resultPage.currentPage-1})"> 이전 </a>
 	</c:if>
 	
 	<c:forEach var = "i" begin="${resultPage.beginUnitPage}" end="${resultPage.endUnitPage}">
-		<a href="javascript:fncGetProductList(${i })">${i }</a>
+		<a href="javascript:fncGetUserList(${i })">${i }</a>
 	</c:forEach>
 	
 	<c:if test = "${resultPage.currentPage < resultPage.maxPage}">
-		<a href="javascript:fncGetProductList(${resultPage.currentPage +1 })"> 이후 </a>
+		<a href="javascript:fncGetUserList(${resultPage.currentPage +1 })"> 이후 </a>
 	</c:if>
 	
 	<c:if test = "${resultPage.currentPage < resultPage.endUnitPage}">
-		 <a href="javascript:fncGetProductList(${resultPage.maxPage })"> &gt;&gt; </a>
+		 <a href="javascript:fncGetUserList(${resultPage.maxPage })"> &gt;&gt; </a>
 	</c:if>

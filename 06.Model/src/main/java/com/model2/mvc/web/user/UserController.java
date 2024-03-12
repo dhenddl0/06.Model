@@ -1,4 +1,4 @@
-package spring.web.user;
+package com.model2.mvc.web.user;
 
 import java.util.Map;
 
